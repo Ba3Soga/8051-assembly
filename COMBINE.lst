@@ -1,0 +1,314 @@
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 1
+
+
+
+
+
+       MCS-51 Family Macro Assembler   A S E M - 5 1   V 1.3
+       =====================================================
+
+
+
+	Source File:	C:\Users\ABDUL AZIZ\Desktop\8051 CODES\COMBINE.asm
+	Object File:	C:\Users\ABDUL AZIZ\Desktop\8051 CODES\COMBINE.hex
+	List File:	C:\Users\ABDUL AZIZ\Desktop\8051 CODES\COMBINE.lst
+
+
+
+ Line  I  Addr  Code            Source
+
+    1:				; [+] Loading Matrices
+    2:		N      00A0	ORG 0A0H
+    3:	  00A0	01 02 03 04	MATRIXA: DB 1,2,3,4,5,6,7,8,9
+	  00A4	05 06 07 08
+	  00A8	09
+    4:		N      00B0	ORG 0B0H
+    5:	  00B0	01 02 03 04	MATRIXB: DB 1,2,3,4,5,6,7,8,9
+	  00B4	05 06 07 08
+	  00B8	09
+    6:		N      00C0	ORG 0C0H
+    7:	  00C0	00 03 06 01	TRANSPO_MATRIX: DB 0,3,6,1,4,7,2,5,8
+	  00C4	04 07 02 05
+	  00C8	08
+    8:
+    9:				; [+] STARTING THE PROGRAM
+   10:		N      0000	ORG 0H
+   11:
+   12:				; Hamard Division
+   13:
+   14:
+   15:	  0000	7D A0		MOV R5, #0A0H        ; Start at memory address 50h (first set)
+   16:	  0002	7E B0		MOV R6, #0B0H        ; Start at memory address 59h (second set)
+   17:
+   18:
+   19:	  0004	7A 09		MOV R2, #09H
+   20:	  0006	78 B0		MOV R0,#0B0h
+   21:	  0008			LOOP4:
+   22:
+   23:	  0008	ED		    MOV A,R5
+   24:	  0009	93		    MOVC A,@A+DPTR
+   25:	  000A	FB		    MOV R3,A
+   26:
+   27:	  000B	EE		    MOV A,R6
+   28:	  000C	93		    MOVC A,@A+DPTR
+   29:
+   30:	  000D	8B F0		    MOV B, R3
+   31:	  000F	84		    DIV AB           ; Add the corresponding number from the second set
+   32:	  0010	F6		    MOV @R0, A       ; Store the result in the result set
+   33:	  0011	08		    INC R0           ; Move to the next memory address in the first set
+   34:	  0012	09		    INC R1           ; Move to the next memory address in the second set
+   35:	  0013	0D		    INC R5
+   36:	  0014	0E		    INC R6
+   37:	  0015	DA F1		    DJNZ R2, LOOP4   ; Repeat until 9 numbers are added
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 2
+
+
+
+ Line  I  Addr  Code            Source
+
+   38:
+   39:
+   40:				; A Transpose
+   41:
+   42:
+   43:	  0017	78 E8		MOV R0, #0E8H
+   44:	  0019	7D 08		MOV R5,#08H
+   45:	  001B	7E 09		MOV R6,#09H
+   46:	  001D			LOOP5:
+   47:	  001D	ED		   MOV A,R5
+   48:	  001E	90 00 C0	   MOV DPTR, #0C0H
+   49:	  0021	93		   MOVC A,@A+DPTR
+   50:	  0022	90 00 A0	   MOV DPTR, #0A0H
+   51:	  0025	93		   MOVC A,@A+DPTR
+   52:	  0026	F6		   MOV @R0, A
+   53:	  0027	18		   DEC R0
+   54:	  0028	1D		   DEC R5
+   55:	  0029	DE F2		   DJNZ R6, LOOP5
+   56:
+   57:				;SUMMATION
+   58:	  002B	90 00 00	MOV DPTR, #0H
+   59:
+   60:				; Add the first and second set of numbers and store the result
+   61:	  002E	7D A0		MOV R5, #0A0H        ; Start at memory address 50h (first set)
+   62:	  0030	7E B0		MOV R6, #0B0H        ; Start at memory address 59h (second set)
+   63:
+   64:
+   65:	  0032	7A 09		MOV R2, #09H
+   66:	  0034	78 30		MOV R0,#30h
+   67:	  0036			LOOP2:
+   68:
+   69:	  0036	ED		    MOV A,R5 ; Jumping to R5 Address #60h
+   70:	  0037	93		    MOVC A,@A+DPTR ; Return to DPTR initial address #0h
+   71:	  0038	FB		    MOV R3,A
+   72:
+   73:	  0039	EE		    MOV A,R6         ;
+   74:	  003A	93		    MOVC A,@A+DPTR
+   75:
+   76:	  003B	2B		    ADD A, R3       ; Add the corresponding number from the second set
+   77:	  003C	F6		    MOV @R0, A       ; Store the result in the result set
+   78:	  003D	08		    INC R0           ; Move to the next memory address in the first set
+   79:	  003E	09		    INC R1           ; Move to the next memory address in the second set
+   80:	  003F	0D		    INC R5
+   81:	  0040	0E		    INC R6
+   82:	  0041	DA F3		    DJNZ R2, LOOP2   ; Repeat until 9 numbers are added
+   83:
+   84:				;DIFFERENCE
+   85:
+   86:
+   87:				; Add the first and second set of numbers and store the result
+   88:	  0043	7D A0		MOV R5, #0A0H        ; Start at memory address 50h (first set)
+   89:	  0045	7E B0		MOV R6, #0B0H        ; Start at memory address 59h (second set)
+   90:
+   91:
+   92:	  0047	7A 09		MOV R2, #09H
+   93:	  0049	78 60		MOV R0,#60h
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 3
+
+
+
+ Line  I  Addr  Code            Source
+
+   94:	  004B			LOOP:
+   95:
+   96:	  004B	ED		    MOV A,R5
+   97:	  004C	93		    MOVC A,@A+DPTR
+   98:	  004D	FB		    MOV R3,A
+   99:
+  100:	  004E	EE		    MOV A,R6
+  101:	  004F	93		    MOVC A,@A+DPTR
+  102:
+  103:	  0050	9B		    SUBB A, R3       ; Add the corresponding number from the second set
+  104:	  0051	F6		    MOV @R0, A       ; Store the result in the result set
+  105:	  0052	08		    INC R0           ; Move to the next memory address in the first set
+  106:	  0053	09		    INC R1           ; Move to the next memory address in the second set
+  107:	  0054	0D		    INC R5
+  108:	  0055	0E		    INC R6
+  109:	  0056	DA F3		    DJNZ R2, LOOP   ; Repeat until 9 numbers are added
+  110:
+  111:				; Hamard Product
+  112:	  0058	90 00 00	MOV DPTR, #0H
+  113:
+  114:	  005B	7D A0		MOV R5, #0A0H        ; Start at memory address 50h (first set)
+  115:	  005D	7E B0		MOV R6, #0B0H        ; Start at memory address 59h (second set)
+  116:
+  117:
+  118:	  005F	7A 09		MOV R2, #09H
+  119:	  0061	78 90		MOV R0,#90h
+  120:	  0063			LOOP3:
+  121:
+  122:	  0063	ED		    MOV A,R5
+  123:	  0064	93		    MOVC A,@A+DPTR
+  124:	  0065	FB		    MOV R3,A
+  125:
+  126:	  0066	EE		    MOV A,R6
+  127:	  0067	93		    MOVC A,@A+DPTR
+  128:
+  129:	  0068	8B F0		    MOV B, R3
+  130:	  006A	A4		    MUL AB           ; Add the corresponding number from the second set
+  131:	  006B	F6		    MOV @R0, A       ; Store the result in the result set
+  132:	  006C	08		    INC R0           ; Move to the next memory address in the first set
+  133:	  006D	09		    INC R1           ; Move to the next memory address in the second set
+  134:	  006E	0D		    INC R5
+  135:	  006F	0E		    INC R6
+  136:	  0070	DA F1		    DJNZ R2, LOOP3   ; Repeat until 9 numbers are added
+  137:
+  138:
+  139:
+  140:				; A Transpose
+  141:
+  142:
+  143:	  0072	78 F8		MOV R0, #0F8H
+  144:	  0074	7D 08		MOV R5,#08H
+  145:	  0076	7E 09		MOV R6,#09H
+  146:	  0078			LOOP9:
+  147:	  0078	ED		   MOV A,R5
+  148:	  0079	90 00 C0	   MOV DPTR, #0C0H
+  149:	  007C	93		   MOVC A,@A+DPTR
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 4
+
+
+
+ Line  I  Addr  Code            Source
+
+  150:	  007D	90 00 B0	   MOV DPTR, #0B0H
+  151:	  0080	93		   MOVC A,@A+DPTR
+  152:	  0081	F6		   MOV @R0, A
+  153:	  0082	18		   DEC R0
+  154:	  0083	1D		   DEC R5
+  155:	  0084	DE F2		   DJNZ R6, LOOP9
+  156:				END
+
+
+
+
+
+                     register banks used:  ---
+
+                     no errors
+
+
+
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 5
+
+
+
+
+
+	       L I S T   O F   S Y M B O L S
+	       =============================
+
+
+SYMBOL				  TYPE     VALUE	LINE
+------------------------------------------------------------
+??ASEM_51			  NUMBER    8051
+??VERSION			  NUMBER    0130
+AC				  BIT	      D6
+ACC				  DATA	      E0
+B				  DATA	      F0
+CY				  BIT	      D7
+DPH				  DATA	      83
+DPL				  DATA	      82
+EA				  BIT	      AF
+ES				  BIT	      AC
+ET0				  BIT	      A9
+ET1				  BIT	      AB
+EX0				  BIT	      A8
+EX1				  BIT	      AA
+EXTI0				  CODE	    0003
+EXTI1				  CODE	    0013
+F0				  BIT	      D5
+IE				  DATA	      A8
+IE0				  BIT	      89
+IE1				  BIT	      8B
+INT0				  BIT	      B2
+INT1				  BIT	      B3
+IP				  DATA	      B8
+IT0				  BIT	      88
+IT1				  BIT	      8A
+LOOP				  CODE	    004B	  94
+LOOP2				  CODE	    0036	  67
+LOOP3				  CODE	    0063	 120
+LOOP4				  CODE	    0008	  21
+LOOP5				  CODE	    001D	  46
+LOOP9				  CODE	    0078	 146
+MATRIXA				  CODE	    00A0	   3
+MATRIXB				  CODE	    00B0	   5
+OV				  BIT	      D2
+P				  BIT	      D0
+P0				  DATA	      80
+P1				  DATA	      90
+P2				  DATA	      A0
+P3				  DATA	      B0
+PCON				  DATA	      87
+PS				  BIT	      BC
+PSW				  DATA	      D0
+PT0				  BIT	      B9
+PT1				  BIT	      BB
+PX0				  BIT	      B8
+PX1				  BIT	      BA
+RB8				  BIT	      9A
+RD				  BIT	      B7
+REN				  BIT	      9C
+RESET				  CODE	    0000
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 6
+
+
+
+SYMBOL				  TYPE     VALUE	LINE
+------------------------------------------------------------
+RI				  BIT	      98
+RS0				  BIT	      D3
+RS1				  BIT	      D4
+RXD				  BIT	      B0
+SBUF				  DATA	      99
+SCON				  DATA	      98
+SINT				  CODE	    0023
+SM0				  BIT	      9F
+SM1				  BIT	      9E
+SM2				  BIT	      9D
+SP				  DATA	      81
+T0				  BIT	      B4
+T1				  BIT	      B5
+TB8				  BIT	      9B
+TCON				  DATA	      88
+TF0				  BIT	      8D
+TF1				  BIT	      8F
+TH0				  DATA	      8C
+TH1				  DATA	      8D
+TI				  BIT	      99
+TIMER0				  CODE	    000B
+TIMER1				  CODE	    001B
+TL0				  DATA	      8A
+TL1				  DATA	      8B
+TMOD				  DATA	      89
+TR0				  BIT	      8C
+TR1				  BIT	      8E
+TRANSPO_MATRIX			  CODE	    00C0	   7
+TXD				  BIT	      B1
+WR				  BIT	      B6

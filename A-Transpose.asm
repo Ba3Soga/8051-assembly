@@ -1,0 +1,34 @@
+; [+] Loading Matrices
+ORG 60H
+MATRIXA: DB 1,2,3,4,5,6,7,8,9
+ORG 70H
+MATRIXB: DB 1,2,3,4,5,6,7,8,9
+ORG 80H
+TRANSPO_MATRIX: DB 0,3,6,1,4,7,2,5,8
+; [+] STARTING THE PROGRAM
+ORG 0H
+
+
+
+; A Transpose 
+MOV DPTR, #0H
+
+MOV R0, #090H
+MOV R5,#08H
+MOV R6,#09H
+LOOP0:
+   MOV A,R5
+   MOV DPTR, #80H
+   MOVC A,@A+DPTR
+   MOV DPTR, #60H
+   MOVC A,@A+DPTR
+   MOV @R0, A
+   DEC R0
+   DEC R5
+   DJNZ R6, LOOP0
+   
+
+   
+
+
+END
